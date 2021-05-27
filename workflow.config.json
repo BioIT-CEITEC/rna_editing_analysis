@@ -1,0 +1,27 @@
+{
+  "workflow_description": {
+    "name":"RNA_editing_analysis",
+    "version": 1.0,
+    "label":"RNA editing analysisC",
+    "type":"analysis",
+    "inputs":"mappped/{sample}.bam",
+    "outputs":[
+    ],
+    "reports":[
+      "reports/RNA_editing_analysis/*"
+    ]
+  },
+  "general_params": [
+    "library_name",
+    "sample_name",
+  ],
+  "gui_params" : {
+    "detailed": {
+      "additional_fastqc_options": {
+        "label": "Additional options to fastqc call",
+        "type": "string",
+        "default": ""
+      }
+    }
+  }
+}
