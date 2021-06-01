@@ -1,16 +1,6 @@
-import math
-import subprocess
-import json
-import re
 import os.path
 import pandas as pd
-from snakemake.utils import R
-from snakemake.utils import report
-from os.path import split
-from helper import define_variable
 from snakemake.utils import min_version
-
-include: "prepare_reference.smk"
 
 min_version("5.18.0")
 
