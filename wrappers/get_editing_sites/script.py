@@ -12,7 +12,6 @@ f = open(snakemake.log.run, 'w')
 f.write("\n##\n## RULE: get_editing_sites \n##\n")
 f.close()
 
-
 command = " Rscript "+os.path.abspath(os.path.dirname(__file__))+"/rna_editing_bam.R "+\
             snakemake.input.bam + " " +\
             snakemake.input.gtf + " " +\
