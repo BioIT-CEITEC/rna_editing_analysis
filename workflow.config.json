@@ -4,8 +4,11 @@
     "version": 1.0,
     "label":"RNA editing analysisC",
     "type":"analysis",
-    "inputs":"mappped/{sample}.bam",
+    "inputs":"mapped/{sample}.bam",
     "outputs":[
+      "per_sample_results/{sample}.seq.fa",
+      "per_sample_results/{sample}.editing_sites.tsv",
+      "sample_logs/{sample}/*"
     ],
     "reports":[
       "reports/RNA_editing_analysis/*"
@@ -13,15 +16,75 @@
   },
   "general_params": [
     "library_name",
-    "sample_name",
+    "sample_name"
   ],
-  "gui_params" : {
+    "gui_params" : {
+      "primary": {
+        "reference": {
+          "label": "Genomic Reference",
+          "type": "enum",
+          "default": "GRCh38-p10",
+          "list": {
+            "Homo sapiens": {
+              "GRCh37-p13": "GRCh37-p13",
+              "GRCh38-p10": "GRCh38-p10"
+            },
+            "Mus musculus": {
+              "GRCm38.p6-93": "GRCm38.p6-93"
+            },
+            "Arabidopsis thaliana": {
+              "TAIR10-31": "TAIR10-31"
+            },
+            "Nothobranchius furzeri": {
+              "Nfu_20150922": "Nfu_20150922",
+              "NFZv2.0": "NFZv2.0"
+            },
+            "Rattus norvegicus": {
+              "Rnor_6.0-91": "Rnor_6.0-91"
+            },
+            "Drosophila melanogaster": {
+              "BDGP6-90": "BDGP6-90",
+              "BDGP6-99": "BDGP6-99"
+            },
+            "Canis familiaris": {
+              "CanFam3.1-90": "CanFam3.1-90",
+              "CanFam3.1-101": "CanFam3.1-101"
+            },
+            "Trichinella spiralis": {
+              "Tspiralis1-37": "Tspiralis1-37"
+            },
+            "Brassica napus": {
+              "AST_PRJEB5043_v1": "AST_PRJEB5043_v1",
+              "Bra_napus_v2": "Bra_napus_v2"
+            },
+            "Saccharomyces cerevisiae": {
+              "R64-1-1.100": "R64-1-1.100"
+            },
+            "Prorhinotermes simplex": {
+              "Peska_transcriptome": "Peska_transcriptome"
+            },
+            "Zootermopsis nevadensis": {
+              "Znev_1_0": "Znev_1_0"
+            },
+            "Caenorhabditis elegans": {
+              "WBcel235-102": "WBcel235-102"
+            },
+            "Danio rerio": {
+              "GRCz11-102": "GRCz11-102"
+            },
+            "Cyprinus carpio": {
+              "Common_carp_ncbi": "Common_carp_ncbi",
+              "Hebao_red_carp_1.0-103": "Hebao_red_carp_1.0-103"
+            }
+          }
+        }
+      }
+    },
     "detailed": {
-      "additional_fastqc_options": {
-        "label": "Additional options to fastqc call",
+      "additional_options": {
+        "label": "Additional options to RNA editing analysis",
         "type": "string",
         "default": ""
       }
     }
-  }
 }

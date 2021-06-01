@@ -7,7 +7,6 @@ import math
 import subprocess
 from snakemake.shell import shell
 
-
 f = open(snakemake.log.run, 'w')
 f.write("\n##\n## RULE: get_editing_sites \n##\n")
 f.close()

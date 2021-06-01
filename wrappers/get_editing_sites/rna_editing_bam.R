@@ -27,14 +27,6 @@ run_all <- function(args){
         log_file <- args[5]
         fasta <- args[6]
         editing_sites <- args[7]
-       
-       #log_file <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/RNA_editing_analysis/sample_logs/u87_adar_kd_rep2/get_editing_sites" 
-      #bam_file <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2_adar_kd_rep2.bam"   
-      # gtf_file <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/annot/GRCh38-p10.gtf"   
-      # Human_AG_all_hg38 <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/Human_AG_all_hg38_v2.csv"
-       #snp_file <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/snp/GRCh38-p10.snp.bed"  
-      # fasta <- "/mnt/ssd/ssd_3/temp/ailar/seq.fa" 
-       #editing_sites <- "/mnt/ssd/ssd_3/temp/ailar/editing_sites.tsv" 
 
       sam <- fread(cmd = paste0("/mnt/ssd/ssd_3/install/anaconda3/bin/samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
       sam <- sam[chr %in% c(1:21,"X","Y")]
@@ -256,6 +248,15 @@ run_all <- function(args){
   cat(tic.log()[[length(tic.log())]],"\n", file = log_file, append = TRUE, sep="" )
   write.table(missmatch_tab_edit, file = editing_sites, row.names = F, quote = F)
 }
+
+    #args <- character(7)
+    #args[1] <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2_adar_kd_rep2.bam"
+    #args[2] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/annot/GRCh38-p10.gtf"
+    #args[3] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/Human_AG_all_hg38_v2.csv"
+    #args[4] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/snp/GRCh38-p10.snp.bed"
+    #args[5] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/RNA_editing_analysis/sample_logs/u87_adar_kd_rep2/get_editing_sites"
+    #args[6] <- "/mnt/ssd/ssd_3/temp/ailar/seq.fa"
+    #args[7] <- "/mnt/ssd/ssd_3/temp/ailar/editing_sites.tsv"
 
 #Run as Rscript
 args <- commandArgs(trailingOnly = T)

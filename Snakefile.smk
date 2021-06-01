@@ -14,27 +14,18 @@ include: "prepare_reference.smk"
 
 min_version("5.18.0")
 
-GLOBAL_REF_PATH = "/mnt/references/"
+#GLOBAL_REF_PATH = "/mnt/references/"
+GLOBAL_REF_PATH = "/mnt/ssd/ssd_3/references/"
 
 ##### Config processing #####
 # Folders
 #
 reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
 
-
-
-
 ###########################################
 # DEFINITION OF VARIABLES
 #
 cfg = pd.DataFrame(config)
-
-REF_DIR = define_variable(cfg, "REF_DIR")
-PROJECT_NAME = define_variable(cfg, "PROJECT_NAME")
-PROJECT_DIR = define_variable(cfg, "PROJECT_DIR")
-INPUTS_DIR = define_variable(cfg, "INPUTS_DIR")
-ADIR = define_variable(cfg, "ANALYSIS_DIR")
-SAMPLE = "full_name"
 
 ##### Target rules #####
 
