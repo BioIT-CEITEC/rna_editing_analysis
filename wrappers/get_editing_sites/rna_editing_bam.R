@@ -4,7 +4,7 @@
 #BiocManager::install("IRanges")
 #BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 #install.packages("seqinr")
-if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1]); library(LncFinder)}
+if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1]); library("LncFinder")}
 #install.packages("devtools")
 #devtools::install_github("collectivemedia/tictoc")
 
@@ -28,7 +28,7 @@ run_all <- function(args){
         fasta <- args[6]
         editing_sites <- args[7]
 
-      sam <- fread(cmd = paste0("/mnt/ssd/ssd_3/install/anaconda3/bin/samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
+      sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
       sam <- sam[chr %in% c(1:21,"X","Y")]
    #take only first chromosome for test purposes 
   # sam <- sam[chr == "1"]
@@ -225,7 +225,7 @@ run_all <- function(args){
 # secondary_structure_run
   tic("secondary_structure_run")
   seqs <- read.fasta(file = fasta)
-  SS.seq_2 <- run_RNAfold(seqs, RNAfold.path = "/mnt/ssd/ssd_3/install/anaconda3/envs/rna_edit/bin/RNAfold", parallel.cores = 2)
+  SS.seq_2 <- run_RNAfold(seqs, RNAfold.path = "RNAfold", parallel.cores = 2)
   toc(log=T)
   cat(tic.log()[[length(tic.log())]],"\n", file = log_file, append = TRUE, sep="" )
   #log_open(log_file, append = TRUE)
