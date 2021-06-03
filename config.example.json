@@ -3,7 +3,7 @@
   "organism": "homsap",
   "reference": "GRCh38-p10",
   "samples":{
-    "kd2":{
+    "id2":{
       "sample_name":"u87_adar_kd_rep2"}
   }
 }
