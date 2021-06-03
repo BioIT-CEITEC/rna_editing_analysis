@@ -4,7 +4,7 @@
 #BiocManager::install("IRanges")
 #BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 #install.packages("seqinr")
-# if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1])}
+if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1])}
 #install.packages("devtools")
 #devtools::install_github("collectivemedia/tictoc")
 
