@@ -253,7 +253,7 @@ run_all <- function(args){
     #args <- character(7)
     #args[1] <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2_adar_kd_rep2.bam"
     #args[2] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/annot/GRCh38-p10.gtf"
-    #args[3] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/Human_AG_all_hg38_v2.csv"
+    #args[3] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/GRCh38-p10.csv"
     #args[4] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/snp/GRCh38-p10.snp.bed"
     #args[5] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/RNA_editing_analysis/sample_logs/u87_adar_kd_rep2/get_editing_sites"
     #args[6] <- "/mnt/ssd/ssd_3/temp/ailar/seq.fa"
