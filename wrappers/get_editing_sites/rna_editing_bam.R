@@ -4,19 +4,20 @@
 #BiocManager::install("IRanges")
 #BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 #install.packages("seqinr")
-if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1]); library("LncFinder")}
+# if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1])}
 #install.packages("devtools")
 #devtools::install_github("collectivemedia/tictoc")
 
-library(IRanges)
+#library(IRanges)
 library(data.table)
 # library(Rsamtools)
 library(rtracklayer)
 library(stringr)
-library(GenomicRanges)
+#library(GenomicRanges)
 library(BSgenome.Hsapiens.UCSC.hg38)
-library(Biostrings)
+#library(Biostrings)
 library(seqinr)
+library("LncFinder")
 library(tictoc)
 
 run_all <- function(args){
