@@ -1,0 +1,9 @@
+{
+  "library_name":"050101_RNA_edit_test",
+  "organism": "homsap",
+  "reference": "GRCh38-p10",
+  "samples":{
+    "kd2":{
+      "sample_name":"u87_adar_kd_rep2"}
+  }
+}
