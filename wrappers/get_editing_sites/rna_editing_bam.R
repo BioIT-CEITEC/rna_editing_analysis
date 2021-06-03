@@ -200,7 +200,7 @@ run_all <- function(args){
   tab[, pos_plus_fifty := pos + 50]
 
 #I tried pos+-hundred, but rnafold took around ten min by using only two cpus that wont be efficient. (I am wondering if we can use all number of cpus; parallel.cores == -1)
-   genome=BSgenome.Hsapiens.UCSC.hg38
+   genome <- BSgenome.Hsapiens.UCSC.hg38
    tab_ranges <- reduce(GRanges( paste0("chr",tab$chr),
                            IRanges(start=tab$pos_min_fifty, end = tab$pos_plus_fifty),
                            strand=tab$strand ))
@@ -214,9 +214,9 @@ run_all <- function(args){
   tab_seq<- setorder(as.data.table(tab_seq))
   tab_seq[, id := seq_along(dna)]
   tab_seq[, id := paste0("seq", id)]
-  seq = tab_seq$dna
-  names(seq) = tab_seq$id
-  dna = DNAStringSet(seq)
+  seq <- tab_seq$dna
+  names(seq) <- tab_seq$id
+  dna <- DNAStringSet(seq)
   writeXStringSet(dna, fasta)
   toc(log=T)
   cat(tic.log()[[length(tic.log())]],"\n", file = log_file, append = TRUE, sep="" )
@@ -251,7 +251,7 @@ run_all <- function(args){
 }
 
     #args <- character(7)
-    #args[1] <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2_adar_kd_rep2.bam"
+    #args[1] <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2.bam"
     #args[2] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/annot/GRCh38-p10.gtf"
     #args[3] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/GRCh38-p10.csv"
     #args[4] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/snp/GRCh38-p10.snp.bed"
