@@ -1,21 +1,10 @@
-#BiocManager::install("Rsamtools")
-#install.packages("remotes")
-#if(!require(SamSeq)) {remotes::install_github("jefferys/SamSeq");library(SamSeq)}
-#BiocManager::install("IRanges")
-#BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
-#install.packages("seqinr")
-if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1])}
-#install.packages("devtools")
-#devtools::install_github("collectivemedia/tictoc")
 
-#library(IRanges)
+if(!require(LncFinder)) {install.packages("LncFinder", repos = getCRANmirrors()$URL[1])}
+
 library(data.table)
-# library(Rsamtools)
 library(rtracklayer)
 library(stringr)
-#library(GenomicRanges)
 library(BSgenome.Hsapiens.UCSC.hg38)
-#library(Biostrings)
 library(seqinr)
 library("LncFinder")
 library(tictoc)
@@ -25,12 +14,15 @@ run_all <- function(args){
         gtf_file <- args[2]
         Human_AG_all_hg38 <- args[3]
         snp_file <- args[4]
-        log_file <- args[5]
-        fasta <- args[6]
-        editing_sites <- args[7]
+        chr_list <- args[5]
+        log_file <- args[6]
+        fasta <- args[7]
+        editing_sites <- args[8]
 
+      dir.create("per_sample_results")
       sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
-      sam <- sam[chr %in% c(1:21,"X","Y")]
+      if(chr_list != "all") sam <- sam[chr %in% chr_list]
+      #sam <- sam[chr %in% c(1:21,"X","Y")]
    #take only first chromosome for test purposes 
   # sam <- sam[chr == "1"]
  
@@ -250,14 +242,15 @@ run_all <- function(args){
   write.table(missmatch_tab_edit, file = editing_sites, row.names = F, quote = F)
 }
 
-    #args <- character(7)
+    #args <- character(8)
     #args[1] <-"/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/mapped/u87_adar_kd_rep2.bam"
     #args[2] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/annot/GRCh38-p10.gtf"
     #args[3] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/known_editing_sites/GRCh38-p10.csv"
     #args[4] <- "/mnt/ssd/ssd_3/references/homsap/GRCh38-p10/other/snp/GRCh38-p10.snp.bed"
-    #args[5] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/RNA_editing_analysis/sample_logs/u87_adar_kd_rep2/get_editing_sites"
-    #args[6] <- "/mnt/ssd/ssd_3/temp/ailar/seq.fa"
-    #args[7] <- "/mnt/ssd/ssd_3/temp/ailar/editing_sites.tsv"
+    #args[5] <- "all"
+    #args[6] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/RNA_editing_analysis/sample_logs/u87_adar_kd_rep2/get_editing_sites"
+    #args[7] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/per_sample_results/u87_adar_kd_rep2.seq.fa"
+    #args[8] <- "/mnt/ssd/ssd_1/snakemake/stage105_RNA_edit_pipeline_test.second/input_files/per_sample_results/u87_adar_kd_rep2.editing_sites.tsv"
 
 #Run as Rscript
 args <- commandArgs(trailingOnly = T)

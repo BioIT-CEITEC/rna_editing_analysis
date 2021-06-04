@@ -77,6 +77,11 @@
               "Hebao_red_carp_1.0-103": "Hebao_red_carp_1.0-103"
             }
           }
+        },
+        "chromosome": {
+          "label": "Chromosome to analyse",
+          "type": "string",
+          "default": ["all"]
         }
       }
     },

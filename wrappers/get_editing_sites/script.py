@@ -16,6 +16,7 @@ command = " Rscript "+os.path.abspath(os.path.dirname(__file__))+"/rna_editing_b
             snakemake.input.gtf + " " +\
             snakemake.input.known_editing + " " +\
             snakemake.input.snp + " " +\
+            snakemake.input.chrm + " " +\
             snakemake.log.run + " " +\
             snakemake.output.fa + " " +\
             snakemake.output.editing_sites + " " +\
