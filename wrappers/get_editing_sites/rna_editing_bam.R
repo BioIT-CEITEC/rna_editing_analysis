@@ -12,7 +12,7 @@ library(tictoc)
 run_all <- function(args){
         bam_file <- args[1]
         gtf_file <- args[2]
-        Human_AG_all_hg38 <- args[3]
+        known_edit_file <- args[3]
         snp_file <- args[4]
         chr_list <- args[5]
         log_file <- args[6]
@@ -22,7 +22,11 @@ run_all <- function(args){
       if(dir.exists("per_sample_results")==F){dir.create("per_sample_results")}
 
       sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
-      if(chr_list != "all") sam <- sam[chr %in% chr_list]
+      if(chr_list == "all"){
+        sam <- sam[chr %in% c(1:21,"X","Y")]
+      }else{
+        sam <- sam[chr %in% chr_list]
+      }
       #sam <- sam[chr %in% c(1:21,"X","Y")]
    #take only first chromosome for test purposes 
   # sam <- sam[chr == "1"]
@@ -149,7 +153,7 @@ run_all <- function(args){
 #write.table(dt_AG,"/mnt/ssd/ssd_3/temp/ailar/AG.bed", sep = ":", row.names = F, quote = F, col.names = F)
   tic("known_editing_sites")
 
-  dt_AG <- fread(Human_AG_all_hg38)
+  dt_AG <- fread(known_edit_file)
   dt_AG <- dt_AG[, .(chr = V1, pos = V3)]
   dt_AG$chr <- gsub("chr","",dt_AG$chr)
   setkey(dt_AG, chr)
