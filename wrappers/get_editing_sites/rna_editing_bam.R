@@ -19,7 +19,8 @@ run_all <- function(args){
         fasta <- args[7]
         editing_sites <- args[8]
 
-      dir.create("per_sample_results")
+      if(dir.exists("per_sample_results")==F){dir.create("per_sample_results")}
+
       sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
       if(chr_list != "all") sam <- sam[chr %in% chr_list]
       #sam <- sam[chr %in% c(1:21,"X","Y")]

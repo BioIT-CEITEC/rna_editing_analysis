@@ -24,10 +24,19 @@ sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 wildcard_constraints:
     sample = "|".join(sample_tab.sample_name)
 
+# Chromosomes
+#
+wildcard_constraints:
+    if cfg['chromosome'].tolist()[0] == "all":
+        chrom = sorted(list(set(cfg['chromosome'].tolist())))
+    else:
+        chrom = cfg['chromosome'].tolist()[0].split(",")
+
+
 ##### Target rules #####
 
 rule all:
-     input: editing_sites = expand("per_sample_results/{sample}.editing_sites.tsv", sample = sample_tab.sample_name)
+     input: editing_sites = expand("per_sample_results/{sample}.editing_sites.{chrm}.tsv", sample = sample_tab.sample_name, chrm = chrom)
 
 ##### Modules #####
 
