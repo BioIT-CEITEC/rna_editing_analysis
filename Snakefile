@@ -26,17 +26,17 @@ wildcard_constraints:
 
 # Chromosomes
 #
+if cfg['chromosome'].tolist()[0] == "all":
+    chrm_list = sorted(list(set(cfg['chromosome'].tolist())))
+else:
+    chrm_list = cfg['chromosome'].tolist()[0].split(",")
 wildcard_constraints:
-    if cfg['chromosome'].tolist()[0] == "all":
-        chrom = sorted(list(set(cfg['chromosome'].tolist())))
-    else:
-        chrom = cfg['chromosome'].tolist()[0].split(",")
-
+    chrom = '|'.join([x for x in chrm_list])
 
 ##### Target rules #####
 
 rule all:
-     input: editing_sites = expand("per_sample_results/{sample}.editing_sites.{chrm}.tsv", sample = sample_tab.sample_name, chrm = chrom)
+     input: editing_sites = expand("per_sample_results/{sample}.editing_sites.{chrom}.tsv", sample = sample_tab.sample_name, chrom = chrm_list)
 
 ##### Modules #####
 
