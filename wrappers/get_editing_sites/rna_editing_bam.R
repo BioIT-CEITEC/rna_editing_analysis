@@ -23,7 +23,7 @@ run_all <- function(args){
 
       sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
       if(chr_list == "all"){
-        sam <- sam[chr %in% c(1:21,"X","Y")]
+        sam <- sam[chr %in% c(1:22,"X","Y")]
       }else{
         sam <- sam[chr %in% chr_list]
       }
