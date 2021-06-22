@@ -101,7 +101,7 @@ run_all <- function(args){
    tab_MD <- data.table(mp = rep(overlapped$mapping_id, times = num_of_missmatch), rel_pos = unlist(missmatch_pos_MD))
    tab_cigar <- data.table(mp = rep(overlapped$mapping_id, times = num_of_positions), num_SIM = unlist(num_of_SIM), positions = unlist(SIM_pos), SIM = unlist(S_or_I_or_M))
    join <- merge(tab_MD, tab_cigar, by = c("mp"), all.x = TRUE)
-#filtering softClips and inserions as relative positions from MD are anly affected by them.
+#filtering softClips and inserions as relative positions from MD are only affected by them.
    join_SI <- join[SIM %like% "[SI]"]
    join_SI <- join_SI[,rel_pos := ifelse(.I[1], ifelse(rel_pos >= positions, rel_pos + num_SIM, rel_pos), ifelse(lag(rel_pos) >= positions, lag(rel_pos) + num_SIM, lag(rel_pos))), by = c("mp", "rel_pos")]
    join_M_other_reads <- join[is.na(match(join$mp, join_SI$mp)),]
@@ -232,15 +232,13 @@ run_all <- function(args){
   tic("overlapping")
   ss_seq <- as.data.table(t(SS.seq_2))
   tab_seq <- cbind(tab_seq, ss_seq[, V2, V3])
-  tab.gr <- GRanges(IRanges(start=tab$pos, end = tab$pos), seqnames = tab$chr, strand = tab$strand)
-  tab_pos <- as.data.table(tab.gr)
-  tab_pos <- cbind(tab_pos, tab[, mapping_id])
+  tab_pos <- tab[, .(seqnames = chr, start = pos, end = pos, width = 1, strand, mapping_id)]
   tab_seq[, seqnames := gsub("chr", "", seqnames)]
   setkeyv(tab_seq, c("seqnames","start","end"))
   overlapped_rna_fold <- foverlaps(tab_pos, tab_seq, by.x=c("seqnames","start","end"), by.y=c("seqnames","start","end"), nomatch = 0)
 
   overlapped_rna_fold[, ss := stringi::stri_sub(V2,from = i.start - start + 1,length = 1)]
-  setnames(overlapped_rna_fold, c("i.V2", "V3"), c("mapping_id", "MFE"))
+  setnames(overlapped_rna_fold, "V3", "MFE")
   missmatch_tab_edit <- merge(missmatch_tab, overlapped_rna_fold[, .(mapping_id, ss, MFE)], by = c("mapping_id"), all.x= TRUE)
   toc(log=T)
   cat(tic.log()[[length(tic.log())]],"\n", file = log_file, append = TRUE, sep="" )
