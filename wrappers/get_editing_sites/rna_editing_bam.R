@@ -21,7 +21,7 @@ run_all <- function(args){
 
       if(dir.exists("per_sample_results")==F){dir.create("per_sample_results")}
 
-      sam <- fread(cmd = paste0("samtools view ", bam_file, " | cut -f 1-4,6,10,11,12"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
+      sam <- fread(cmd = paste0("samtools view ", bam_file, " | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
       if(chr_list == "all"){
         sam <- sam[chr %in% c(1:22,"X","Y")]
       }else{
