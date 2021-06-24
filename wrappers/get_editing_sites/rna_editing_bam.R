@@ -106,7 +106,7 @@ run_all <- function(args){
      #filtering softClips and inserions as relative positions from MD are only affected by them.
      join_SI <- joined[SIM %like% "[SI]"]
      join_SI <- join_SI[,rel_pos := ifelse(.I[1], ifelse(rel_pos >= positions, rel_pos + num_SIM, rel_pos), ifelse(lag(rel_pos) >= positions, lag(rel_pos) + num_SIM, lag(rel_pos))), by = c("mp", "rel_pos")]
-     join_M_other_reads <- joined[is.na(match(join$mp, join_SI$mp)),]
+     join_M_other_reads <- joined[is.na(match(joined$mp, join_SI$mp)),]
      real_pos <- rbind(join_SI, join_M_other_reads)
      setkey(real_pos, mp)
      real_pos <- real_pos[,list(max.score=max(rel_pos)), by=c("mp", "rel_pos")]
