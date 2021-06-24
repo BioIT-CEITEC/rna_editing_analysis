@@ -221,6 +221,7 @@ run_all <- function(args){
                      "real_pos", "ref", "alt", "P_accuracy", "known_editting",
                      "AG_variants", "all_variants", "pop_AF", "ss", "MFE")
      write(header_tab, editing_sites, ncolumns = 17, sep="\t")
+     write("", fasta)
    }
 }
 
