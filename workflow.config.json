@@ -2,7 +2,7 @@
   "workflow_description": {
     "name":"RNA_editing_analysis",
     "version": 1.0,
-    "label":"RNA editing analysisC",
+    "label":"RNA editing analysis",
     "type":"analysis",
     "inputs":"mapped/{sample}.bam",
     "outputs":[
