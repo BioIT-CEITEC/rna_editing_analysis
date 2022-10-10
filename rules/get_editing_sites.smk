@@ -1,16 +1,15 @@
 rule get_editing_sites:
      input:
-        bam = "mapped/{sample}.bam",
-        gtf = expand("{ref_dir}/annot/{ref}.gtf", ref_dir = reference_directory, ref = config["reference"])[0],
-        known_editing = expand("{ref_dir}/other/known_editing_sites/{ref}.csv", ref_dir = reference_directory, ref = config["reference"])[0],
-        snp = expand("{ref_dir}/other/snp/{ref}.snp.bed", ref_dir = reference_directory, ref = config["reference"])[0]
+        bam = "/mnt/nfs/shared/RNA_and_Immunity/sequencing_results/projects/M6A_KD_flies_editing/RNA_alignment/mapped/{sample}.bam",
+        gtf = expand("{ref_dir}/annot/{rel}/{ref}.gtf",ref_dir = reference_directory,rel = config["release"],ref = config["reference"])[0],
      params:
-        chrm = "{chrom}"
+        chr = config["chromosome"]
      output:
-        fa = "per_sample_results/{sample}.seq.{chrom}.fa",
-        editing_sites = "per_sample_results/{sample}.editing_sites.{chrom}.tsv"
+        mismatch_tab = "results/{sample}.mismatch_tab.tsv",
      log:
-        run = "sample_logs/{sample}/get_editing_sites.{chrom}.log"
+        run = "logs/{sample}/get_editing_sites.log"
      threads: 20
      conda: "../wrappers/get_editing_sites/env.yaml"
      script: "../wrappers/get_editing_sites/script.py"
+
+

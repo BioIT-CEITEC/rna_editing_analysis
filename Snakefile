@@ -1,45 +1,30 @@
 import os
 import pandas as pd
-import json
 from snakemake.utils import min_version
 
-min_version("5.18.0")
+min_version("7.2.1")
 
-#GLOBAL_REF_PATH = "/mnt/references/"
-GLOBAL_REF_PATH = "/mnt/ssd/ssd_3/references/"
+configfile: "config.json"
 
-##### Config processing #####
-# Folders
+
+##### Config and reference processing #####
 #
-reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
+GLOBAL_REF_PATH = "/mnt/nfs/shared/S3acgt/resources"
 
-###########################################
-# DEFINITION OF VARIABLES
-#
-cfg = pd.DataFrame(config)
-
-# Samples
-#
+reference_directory = os.path.join(GLOBAL_REF_PATH,"organisms",config["organism"],config["reference"])
 sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
-wildcard_constraints:
-    sample = "|".join(sample_tab.sample_name)
 
-# Chromosomes
-#
-if cfg['chromosome'].tolist()[0] == "all":
-    chrm_list = sorted(list(set(cfg['chromosome'].tolist())))
-else:
-    chrm_list = cfg['chromosome'].tolist()[0].split(",")
+
 wildcard_constraints:
-    chrom = '|'.join([x for x in chrm_list])
+    sample = "|".join(sample_tab.sample_name),
+
 
 ##### Target rules #####
 
 rule all:
-     input: editing_sites = expand("per_sample_results/{sample}.editing_sites.{chrom}.tsv", sample = sample_tab.sample_name, chrom = chrm_list)
+     input: expand("results/{sample}.mismatch_tab.tsv", sample = sample_tab.sample_name),
 
 ##### Modules #####
 
 include: "rules/get_editing_sites.smk"
-
 
