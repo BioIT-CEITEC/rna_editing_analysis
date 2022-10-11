@@ -18,7 +18,6 @@ sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 wildcard_constraints:
     sample = "|".join(sample_tab.sample_name),
 
-
 ##### Target rules #####
 
 rule all:
@@ -27,4 +26,3 @@ rule all:
 ##### Modules #####
 
 include: "rules/get_editing_sites.smk"
-
