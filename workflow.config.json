@@ -6,9 +6,8 @@
     "type":"analysis",
     "inputs":"mapped/{sample}.bam",
     "outputs":[
-      "per_sample_results/{sample}.seq.fa",
-      "per_sample_results/{sample}.editing_sites.tsv",
-      "sample_logs/{sample}/*"
+      "results/{sample}.mismatch_cov_tab.tsv",
+      "logs/{sample}/*"
     ],
     "reports":[
       "reports/RNA_editing_analysis/*"
