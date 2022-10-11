@@ -9,9 +9,8 @@ configfile: "config.json"
 
 ##### Config and reference processing #####
 #
-GLOBAL_REF_PATH = "/mnt/ssd/ssd_3/references"
 
-reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
+reference_directory = os.path.join(config["globalResources"],config["organism"],config["reference"])
 sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 
 
