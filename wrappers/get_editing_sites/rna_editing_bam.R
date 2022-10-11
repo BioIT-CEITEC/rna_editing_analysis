@@ -4,22 +4,14 @@ library(stringr,verbose = F)
 library(parallel,verbose = F)
 
 
-read_single_chr_bam_as_sam <- function(chr_list,bam_file){
+read_single_chr_bam_as_sam <- function(bam_file){
 
   sam <- fread(cmd = paste0("samtools view ", bam_file, " | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
-  # #to_test
-  # sam <- fread("/mnt/ssd/ssd_1/workspace/katka/bara_RNA_editing/Adar_1.tsv", col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
-
-  if(chr_list == "all"){
-    sam <- sam[chr %in% c("2L","2R","3L","3R","4","X","Y")]
-  }else{
-    sam <- sam[chr %in% chr_list]
-  }
+  sam <- sam[chr %in% c("2L","2R","3L","3R","4","X","Y")]
 
   sam[,end := start + nchar(read)]
   sam[,chr := as.character(chr)]
 
-  print("read_single_chr_bam_as_sam ..... DONE")
   return(sam)
 }
 
@@ -46,7 +38,6 @@ gene_annotation_and_multimapped_split <- function(sam,chr_ref){
   setkey(sam,row_id)
   sam <- strand_cast_tab[sam]
 
-  print("gene_annotation_and_multimapped_split ..... DONE")
   return(sam)
 }
 
@@ -80,7 +71,6 @@ create_cigar_table <- function(sam){
   cigar_tab[,que_start_pos := cumsum(cons_que_length) - cons_que_length +1,by = row_id]
   setkey(cigar_tab,row_id)
 
-  print("cigar_tab ..... DONE")
   return(cigar_tab)
 }
 
@@ -135,28 +125,49 @@ create_mismatch_table <- function(cigar_tab,sam){
   mismatch_tab <- sam[,.(row_id,chr,fwd_gene_id,rev_gene_id,mapping_start,mapping_end)][mismatch_tab]
   mismatch_tab[,per_map_mismatch_count := .N,by = row_id]
 
-  print("mismatch_tab ..... DONE")
   return(mismatch_tab)
 }
 
-process_single_chromosome <- function(bam_file,chr_ref,chr_list){
 
-  sam <- read_single_chr_bam_as_sam(chr_list,bam_file)
+process_single_chromosome <- function(bam_file,chr_ref){
+
+  sam <- read_single_chr_bam_as_sam(bam_file)
   sam <- gene_annotation_and_multimapped_split(sam,chr_ref[,.(chr,start,end,gene_id,strand)])
   cigar_tab <- create_cigar_table(sam)
   mismatch_tab <- create_mismatch_table(cigar_tab,sam)
 
   setkey(mismatch_tab,chr,ref_pos)
 
-  print("process_single_chromosome ..... DONE")
   return(mismatch_tab)
 }
+
+
+mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix,output_file){
+  print("########### 1 ###########")
+  pos_tab <- mismatch_tab[,.N,.(chr,ref_pos,ref,alt)][N > 1]
+  pos_tab <- unique(pos_tab[,.(chr,ref_pos)])
+  pos_tab[,ref_pos_end := ref_pos]
+  pos_tab[,ref_pos := ref_pos-1]
+  fwrite(pos_tab,file = paste0(output_file_prefix,".positions_tmp.bed"), sep = "\t", col.names = F)
+  print("########### 2 ###########")
+
+  cov_tab <- fread(cmd = paste0("bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
+
+  print("########### 3 ###########")
+  mismatch_cov_tab <- merge(mismatch_tab,cov_tab,by.x=c("chr","ref_pos"),by.y=c("chr","end"))
+  mismatch_cov_tab$start <- NULL
+
+  print("########### 4 ###########")
+  file.remove(paste0(output_file_prefix,".positions_tmp.bed"))
+  fwrite(mismatch_cov_tab,file = output_file, sep = "\t")
+}
+
 
 run_all <- function(args){
 
   bam_file <- args[1]
   gtf_file <- args[2]
-  chr_list <- args[3]
+  output_file_prefix <- args[3]
   output_file <- args[4]
 
   #read gtf_file
@@ -164,32 +175,27 @@ run_all <- function(args){
   annotate_by<- c("gene_name","gene_id", "strand")
   ref <- as.data.table(rtracklayer::import(gtf_file, feature.type = feat_type))[, c("seqnames","start","end",annotate_by), with=F]
   setnames(ref,"seqnames","chr")
-
+  ref[,chr := as.character(chr)]
   ref <- ref[chr %in% c("2L","2R","3L","3R","4","X","Y")]
   setkey(ref,chr ,start,end)
 
   res <- mclapply(unique(ref$chr),function(x) {
     return(process_single_chromosome(bam_file = bam_file,
-                                     chr_ref = ref[chr == x,],
-                                     chr_list = x))
+                                     chr_ref = ref[chr == x,]))
   },mc.preschedule = F,mc.silent = T,mc.cleanup = T,mc.cores = 16)
-
-  # res <- lapply(unique(ref$chr),function(x) {
-  #   return(process_single_chromosome(bam_file = bam_file,
-  #                                    chr_ref = ref[chr == x,],
-  #                                    chr_list = x))
-  # })
-  #
   mismatch_tab <- rbindlist(res)
 
-  fwrite(mismatch_tab,file = paste0(output_file,".tsv"), sep = "\t")
+  mismatch_coverage_count(bam_file,mismatch_tab,output_file_prefix,output_file)
 }
 
 
+
 args <- commandArgs(trailingOnly = T)
+## to test
 # args <- c("/mnt/nfs/shared/RNA_and_Immunity/sequencing_results/projects/M6A_KD_flies_editing/RNA_alignment/mapped/Adar_1.bam",
 #           "/mnt/ssd/ssd_3/references/drosophila_melanogaster/BDGP6-99/annot/BDGP6-99.gtf",
-#           "all",
-#           "/mnt/ssd/ssd_1/workspace/katka/bara_RNA_editing/Adar_1")
+#           "Adar_1")
 run_all(args)
+
+
 

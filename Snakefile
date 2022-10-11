@@ -9,9 +9,9 @@ configfile: "config.json"
 
 ##### Config and reference processing #####
 #
-GLOBAL_REF_PATH = "/mnt/nfs/shared/S3acgt/resources"
+GLOBAL_REF_PATH = "/mnt/ssd/ssd_3/references"
 
-reference_directory = os.path.join(GLOBAL_REF_PATH,"organisms",config["organism"],config["reference"])
+reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
 sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 
 
@@ -22,7 +22,7 @@ wildcard_constraints:
 ##### Target rules #####
 
 rule all:
-     input: expand("results/{sample}.mismatch_tab.tsv", sample = sample_tab.sample_name),
+     input: expand("results/{sample}.mismatch_cov_tab.tsv", sample = sample_tab.sample_name),
 
 ##### Modules #####
 
