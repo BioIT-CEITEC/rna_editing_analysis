@@ -150,7 +150,7 @@ mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix){
   pos_tab[,ref_pos := ref_pos-1]
   fwrite(pos_tab,file = paste0(output_file_prefix,".positions_tmp.bed"), sep = "\t", col.names = F)
 
-  cov_tab <- fread(cmd = paste0("bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
+  cov_tab <- fread(cmd = paste0("TMPDIR='./tmp/'; bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
 
   mismatch_cov_tab <- merge(mismatch_tab,cov_tab,by.x=c("chr","ref_pos"),by.y=c("chr","end"))
   mismatch_cov_tab$start <- NULL
