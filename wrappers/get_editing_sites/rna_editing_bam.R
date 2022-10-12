@@ -2,11 +2,13 @@ library(data.table,verbose = F)
 library(rtracklayer,verbose = F)
 library(stringr,verbose = F)
 library(parallel,verbose = F)
-
+suppressMessages(library(BiocGenerics))
+suppressMessages(library(parallel))
+options(scipen=999) #disable scientific notation (because we are creating BED file)
 
 read_single_chr_bam_as_sam <- function(bam_file){
 
-  sam <- fread(cmd = paste0("samtools view ", bam_file, " | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
+  sam <- fread(cmd = paste0("TMPDIR='./tmp/'; samtools view ", bam_file, " | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
   sam <- sam[chr %in% c("2L","2R","3L","3R","4","X","Y")]
 
   sam[,end := start + nchar(read)]
@@ -142,26 +144,23 @@ process_single_chromosome <- function(bam_file,chr_ref){
 }
 
 
-mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix,output_file){
-  print("########### 1 ###########")
+mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix){
+
   pos_tab <- mismatch_tab[,.N,.(chr,ref_pos,ref,alt)][N > 1]
   pos_tab <- unique(pos_tab[,.(chr,ref_pos)])
   pos_tab[,ref_pos_end := ref_pos]
   pos_tab[,ref_pos := ref_pos-1]
   fwrite(pos_tab,file = paste0(output_file_prefix,".positions_tmp.bed"), sep = "\t", col.names = F)
-  print("########### 2 ###########")
 
   cov_tab <- fread(cmd = paste0("bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
 
-  print("########### 3 ###########")
   mismatch_cov_tab <- merge(mismatch_tab,cov_tab,by.x=c("chr","ref_pos"),by.y=c("chr","end"))
   mismatch_cov_tab$start <- NULL
 
-  print("########### 4 ###########")
   file.remove(paste0(output_file_prefix,".positions_tmp.bed"))
-  fwrite(mismatch_cov_tab,file = output_file, sep = "\t")
-}
 
+  return(mismatch_cov_tab)
+}
 
 run_all <- function(args){
 
@@ -185,17 +184,17 @@ run_all <- function(args){
   },mc.preschedule = F,mc.silent = T,mc.cleanup = T,mc.cores = 16)
   mismatch_tab <- rbindlist(res)
 
-  mismatch_coverage_count(bam_file,mismatch_tab,output_file_prefix,output_file)
+  mismatch_cov_tab <- mismatch_coverage_count(bam_file,mismatch_tab,output_file_prefix,output_file)
+  fwrite(mismatch_cov_tab,file = output_file, sep = "\t")
 }
 
 
 
 args <- commandArgs(trailingOnly = T)
-## to test
+# to test
 # args <- c("/mnt/nfs/shared/RNA_and_Immunity/sequencing_results/projects/M6A_KD_flies_editing/RNA_alignment/mapped/Adar_1.bam",
 #           "/mnt/ssd/ssd_3/references/drosophila_melanogaster/BDGP6-99/annot/BDGP6-99.gtf",
-#           "Adar_1")
+#           "Adar_1",
+#           "/mnt/ssd/ssd_1/workspace/katka/bara_RNA_editing/Adar_1.mismatch_cov_tab.tsv")
 run_all(args)
-
-
 
