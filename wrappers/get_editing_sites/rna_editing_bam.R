@@ -143,7 +143,6 @@ process_single_chromosome <- function(bam_file,chr_ref){
 
 
 mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix){
-
   pos_tab <- mismatch_tab[,.N,.(chr,ref_pos,ref,alt)][N > 1]
   pos_tab <- unique(pos_tab[,.(chr,ref_pos)])
   pos_tab[,ref_pos_end := ref_pos]
@@ -159,6 +158,7 @@ mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix){
 
   return(mismatch_cov_tab)
 }
+
 
 run_all <- function(args){
 
@@ -182,7 +182,7 @@ run_all <- function(args){
   },mc.preschedule = F,mc.silent = T,mc.cleanup = T,mc.cores = 16)
   mismatch_tab <- rbindlist(res)
 
-  mismatch_cov_tab <- mismatch_coverage_count(bam_file,mismatch_tab,output_file_prefix,output_file)
+  mismatch_cov_tab <- mismatch_coverage_count(bam_file,mismatch_tab,output_file_prefix)
   fwrite(mismatch_cov_tab,file = output_file, sep = "\t")
 }
 
