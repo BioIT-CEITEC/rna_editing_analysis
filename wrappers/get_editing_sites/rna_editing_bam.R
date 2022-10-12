@@ -2,8 +2,6 @@ library(data.table,verbose = F)
 library(rtracklayer,verbose = F)
 library(stringr,verbose = F)
 library(parallel,verbose = F)
-suppressMessages(library(BiocGenerics))
-suppressMessages(library(parallel))
 options(scipen=999) #disable scientific notation (because we are creating BED file)
 
 read_single_chr_bam_as_sam <- function(bam_file){
