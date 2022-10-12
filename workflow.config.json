@@ -10,7 +10,7 @@
       "logs/{sample}/*"
     ],
     "reports":[
-      "reports/RNA_editing_analysis/*"
+      "results/*"
     ]
   },
   "general_params": [
