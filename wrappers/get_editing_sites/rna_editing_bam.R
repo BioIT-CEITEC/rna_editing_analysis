@@ -176,6 +176,8 @@ run_all <- function(args){
   ref <- ref[chr %in% c("2L","2R","3L","3R","4","X","Y")]
   setkey(ref,chr ,start,end)
 
+  dir.create("./tmp")
+
   res <- mclapply(unique(ref$chr),function(x) {
     return(process_single_chromosome(bam_file = bam_file,
                                      chr_ref = ref[chr == x,]))
