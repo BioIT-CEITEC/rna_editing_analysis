@@ -11,7 +11,7 @@ f.close()
 command = "Rscript "+os.path.abspath(os.path.dirname(__file__))+"/rna_editing_bam.R "+\
             snakemake.input.bam + " " +\
             snakemake.input.gtf + " " +\
-            snakemake.params.prefix + " "+\
+            snakemake.output.bed + " " +\
             snakemake.output.mismatch_tab + " " +\
             " >> " + snakemake.log.run + " 2>&1"
 

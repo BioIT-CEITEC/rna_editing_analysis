@@ -4,10 +4,9 @@ library(stringr,verbose = F)
 library(parallel,verbose = F)
 options(scipen=999) #disable scientific notation (because we are creating BED file)
 
-read_single_chr_bam_as_sam <- function(bam_file){
+read_single_chr_bam_as_sam <- function(bam_file, chr_name){
 
-  sam <- fread(cmd = paste0("TMPDIR='./tmp/'; samtools view ", bam_file, " | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
-  sam <- sam[chr %in% c("2L","2R","3L","3R","4","X","Y")]
+  sam <- fread(cmd = paste0("samtools view ",bam_file," ",chr_name," | awk -v OFS='\t' '$0 !~ /MD:Z:[0-9]+\t/{match($0,/MD:Z:[^\t]+/); print $1, $2, $3, $4, $6, $10, $11, substr($0,RSTART,RLENGTH)}'"), col.names = c("qname", "flag", "chr", "start", "cigar", "read", "mapq", "MD"))
 
   sam[,end := start + nchar(read)]
   sam[,chr := as.character(chr)]
@@ -129,9 +128,9 @@ create_mismatch_table <- function(cigar_tab,sam){
 }
 
 
-process_single_chromosome <- function(bam_file,chr_ref){
+process_single_chromosome <- function(bam_file,chr_ref,chr_name){
 
-  sam <- read_single_chr_bam_as_sam(bam_file)
+  sam <- read_single_chr_bam_as_sam(bam_file,chr_name)
   sam <- gene_annotation_and_multimapped_split(sam,chr_ref[,.(chr,start,end,gene_id,strand)])
   cigar_tab <- create_cigar_table(sam)
   mismatch_tab <- create_mismatch_table(cigar_tab,sam)
@@ -143,18 +142,23 @@ process_single_chromosome <- function(bam_file,chr_ref){
 
 
 mismatch_coverage_count <- function(bam_file,mismatch_tab,output_file_prefix){
-  pos_tab <- mismatch_tab[,.N,.(chr,ref_pos,ref,alt)][N > 1]
-  pos_tab <- unique(pos_tab[,.(chr,ref_pos)])
+  mismatch_tab <- mismatch_tab[,.N,.(chr,ref_pos,ref,alt)][N > 1]
+
+  pos_tab <- unique(mismatch_tab[,.(chr,ref_pos)])
   pos_tab[,ref_pos_end := ref_pos]
   pos_tab[,ref_pos := ref_pos-1]
-  fwrite(pos_tab,file = paste0(output_file_prefix,".positions_tmp.bed"), sep = "\t", col.names = F)
+  # fwrite(pos_tab,file = paste0(output_file_prefix,".positions_tmp.bed"), sep = "\t", col.names = F)
+  fwrite(pos_tab,file = output_file_prefix, sep = "\t", col.names = F)
 
-  cov_tab <- fread(cmd = paste0("TMPDIR='./tmp/'; bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
+  # cov_tab <- fread(cmd = paste0("bedtools coverage -a ",output_file_prefix,".positions_tmp.bed -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
+  cov_tab <- fread(cmd = paste0("bedtools coverage -a ",output_file_prefix," -b ",bam_file," -counts"), col.names = c("chr", "start", "end", "cov"))
+  ## to test
+  # cov_tab <- fread("bara_RNA_editing/Adar_1.2L.bed", col.names = c("chr", "start", "end", "cov"))
 
   mismatch_cov_tab <- merge(mismatch_tab,cov_tab,by.x=c("chr","ref_pos"),by.y=c("chr","end"))
   mismatch_cov_tab$start <- NULL
 
-  file.remove(paste0(output_file_prefix,".positions_tmp.bed"))
+  # file.remove(paste0(output_file_prefix,".positions_tmp.bed"))
 
   return(mismatch_cov_tab)
 }
@@ -167,6 +171,9 @@ run_all <- function(args){
   output_file_prefix <- args[3]
   output_file <- args[4]
 
+  # output_file_prefix <- gsub(".mismatch_cov_tab.tsv"," ",output_file)
+
+
   #read gtf_file
   feat_type <- "gene"
   annotate_by<- c("gene_name","gene_id", "strand")
@@ -176,11 +183,11 @@ run_all <- function(args){
   ref <- ref[chr %in% c("2L","2R","3L","3R","4","X","Y")]
   setkey(ref,chr ,start,end)
 
-  dir.create("./tmp")
 
   res <- mclapply(unique(ref$chr),function(x) {
     return(process_single_chromosome(bam_file = bam_file,
-                                     chr_ref = ref[chr == x,]))
+                                     chr_ref = ref[chr == x,],
+                                     chr_name = x))
   },mc.preschedule = F,mc.silent = T,mc.cleanup = T,mc.cores = 16)
   mismatch_tab <- rbindlist(res)
 

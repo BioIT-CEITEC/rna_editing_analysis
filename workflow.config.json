@@ -8,9 +8,6 @@
     "outputs":[
       "results/{sample}.mismatch_cov_tab.tsv",
       "logs/{sample}/*"
-    ],
-    "reports":[
-      "results/*"
     ]
   },
   "general_params": [
