@@ -1,86 +1,157 @@
 {
   "workflow_description": {
-    "name":"RNA_editing_analysis",
+    "name":"structural_var_call",
     "version": 1.0,
-    "label":"RNA editing analysis",
-    "type":"analysis",
-    "inputs":"mapped/{sample}.bam",
+    "label":"Structural variant calling 3",
+    "type":"var_call",
+    "run_parameters": {
+      "cpu": 31,
+      "memory": 65
+    },
+
+    "inputs":[
+      "mapped/{sample}.bam*"
+    ],
     "outputs":[
-      "results/{sample}.mismatch_cov_tab.tsv",
-      "logs/{sample}/*"
+      "structural_varcalls/*",
+      "final_CNV_results/*",
+      "reports/final_SV_report.html"
+    ],
+    "inputs_optional":[
+      "cohort_data/cohort_cnv_info.tar.gz"
+    ],
+    "outputs_optional":[
+      "cohort_data/cohort_cnv_info.tar.gz"
+    ],
+    "report_index": "reports/final_SV_report.html",
+    "reports":[
+      "reports/final_SV_report.html"
     ]
   },
   "general_params": [
-    "library_name",
+    "entity_name",
     "sample_name"
   ],
-    "gui_params" : {
-      "primary": {
-        "reference": {
-          "label": "Genomic Reference",
-          "type": "enum",
-          "default": "GRCh38-p10",
-          "list": {
-            "Homo sapiens": {
-              "GRCh37-p13": "GRCh37-p13",
-              "GRCh38-p10": "GRCh38-p10"
-            },
-            "Mus musculus": {
-              "GRCm38.p6-93": "GRCm38.p6-93"
-            },
-            "Arabidopsis thaliana": {
-              "TAIR10-31": "TAIR10-31"
-            },
-            "Nothobranchius furzeri": {
-              "Nfu_20150922": "Nfu_20150922",
-              "NFZv2.0": "NFZv2.0"
-            },
-            "Rattus norvegicus": {
-              "Rnor_6.0-91": "Rnor_6.0-91"
-            },
-            "Drosophila melanogaster": {
-              "BDGP6-90": "BDGP6-90",
-              "BDGP6-99": "BDGP6-99"
-            },
-            "Canis familiaris": {
-              "CanFam3.1-90": "CanFam3.1-90",
-              "CanFam3.1-101": "CanFam3.1-101"
-            },
-            "Trichinella spiralis": {
-              "Tspiralis1-37": "Tspiralis1-37"
-            },
-            "Brassica napus": {
-              "AST_PRJEB5043_v1": "AST_PRJEB5043_v1",
-              "Bra_napus_v2": "Bra_napus_v2"
-            },
-            "Saccharomyces cerevisiae": {
-              "R64-1-1.100": "R64-1-1.100"
-            },
-            "Prorhinotermes simplex": {
-              "Peska_transcriptome": "Peska_transcriptome"
-            },
-            "Zootermopsis nevadensis": {
-              "Znev_1_0": "Znev_1_0"
-            },
-            "Caenorhabditis elegans": {
-              "WBcel235-102": "WBcel235-102"
-            },
-            "Danio rerio": {
-              "GRCz11-102": "GRCz11-102"
-            },
-            "Cyprinus carpio": {
-              "Common_carp_ncbi": "Common_carp_ncbi",
-              "Hebao_red_carp_1.0-103": "Hebao_red_carp_1.0-103"
-            }
-          }
+  "requested_params": [
+    "reference",
+    "lib_ROI"
+  ],
+  "gui_params" : {
+    "primary": {
+      "call_cnvs": {
+        "label": "Call copy number variants.",
+        "type": "bool",
+        "default": true
+      },
+      "call_SVs": {
+        "label": "Call structural variants using discordant reads.",
+        "type": "bool",
+        "default": true
+      },
+      "calling_type": {
+        "label": "Calling type",
+        "type": "enum",
+        "default": "germline",
+        "list": {
+          "germline": "Germline",
+          "tumor_only": "Somatic tumor-only",
+          "tumor_normal": "Somatic tumor-normal pair"
         }
       }
     },
     "detailed": {
-      "additional_options": {
-        "label": "Additional options to RNA editing analysis",
+      "wgs_bin_size": {
+        "label": "Bin size to split genome to in WGS",
+        "type": "int",
+        "default": 50000
+      },
+      "use_gatk_cnv": {
+        "label": "Use GATK_cnv for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_cnvkit": {
+        "label": "Use CNVkit for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_jabCoNtool": {
+        "label": "Use jabCoNtool for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "jabCoNtool_use_snps": {
+        "label": "Use snps allelic frequency.",
+        "type": "bool",
+        "default": true
+      },
+      "jabCoNtool_predict_TL": {
+        "label": "Predict tumor DNA fraction in somatic samples.",
+        "type": "bool",
+        "default": true
+      },
+      "jabCoNtool_normalize_to_GC": {
+        "label": "Normalize read count to GC content for WGS.",
+        "type": "bool",
+        "default": true
+      },
+      "jabCoNtool_remove_centromeres": {
+        "label": "Remove centromere regions in WGS.",
+        "type": "bool",
+        "default": true
+      },
+      "max_CNV_occurance_in_cohort": {
+        "label": "Maximal occurance of CNV in cohort for it not to be filtered. As ratio of cohort size in percent.",
+        "type": "int",
+        "default": 100
+      },
+      "use_control_freec": {
+        "label": "Use Control-FREEC for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_manta": {
+        "label": "Use Manta for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_gridss": {
+        "label": "Use GRIDSS for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_delly": {
+        "label": "Use Delly2 for variant calling.",
+        "type": "bool",
+        "default": true
+      },
+      "use_cohort_data": {
+        "label": "Load coverage data from previous experiments for normal estimation. Need file: cohort_data/cohort_cnv_info.tar.gz",
+        "type": "bool",
+        "default": false
+      },
+      "create_cohort_data": {
+        "label": "Save info about coverage data to the cohort_cnv_info file. (include loaded cohort data)",
+        "type": "bool",
+        "default": true
+      }
+    },
+    "samples": {
+      "donor": {
+        "label": "Patient ID",
         "type": "string",
         "default": ""
+      },
+      "tumor_normal": {
+        "label": "Tumor or normal",
+        "type": "enum",
+        "default": "normal",
+        "list": {
+          "tumor": "tumor",
+          "normal": "normal"
+        }
       }
     }
+  }
 }
+
