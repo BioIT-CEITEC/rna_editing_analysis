@@ -9,15 +9,6 @@ GLOBAL_REF_PATH = config["globalResources"]
 sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 
 #### Reference info processing
-
-#### Setting reference from lib_ROI
-if config["lib_ROI"] != "wgs":
-    # setting reference from lib_ROI
-    f = open(os.path.join(GLOBAL_REF_PATH,"reference_info","lib_ROI.json"))
-    lib_ROI_dict = json.load(f)
-    f.close()
-    config["reference"] = [ref_name for ref_name in lib_ROI_dict.keys() if isinstance(lib_ROI_dict[ref_name],dict) and config["lib_ROI"] in lib_ROI_dict[ref_name].keys()][0]
-
 #### Setting organism from reference
 f = open(os.path.join(GLOBAL_REF_PATH,"reference_info","reference.json"))
 reference_dict = json.load(f)
@@ -29,50 +20,34 @@ reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["re
 
 # ####################################
 # # VARIALBES FROM CONFIG
-used_SV_callers = []
-used_CNV_callers = []
-if config["use_gatk_cnv"]:
-    used_CNV_callers.append("gatk_cnv")
-if config["use_cnvkit"]:
-    used_CNV_callers.append("cnvkit")
-if config["use_jabCoNtool"]:
-    used_CNV_callers.append("jabCoNtool")
-if config["use_control_freec"]:
-    used_CNV_callers.append("control_freec")
-if config["use_manta"]:
-    used_SV_callers.append("manta")
-if config["use_gridss"]:
-    used_SV_callers.append("gridss")
+# used_SV_callers = []
+# used_CNV_callers = []
+# if config["use_gatk_cnv"]:
+#     used_CNV_callers.append("gatk_cnv")
+# if config["use_cnvkit"]:
+#     used_CNV_callers.append("cnvkit")
+# if config["use_jabCoNtool"]:
+#     used_CNV_callers.append("jabCoNtool")
+# if config["use_control_freec"]:
+#     used_CNV_callers.append("control_freec")
+# if config["use_manta"]:
+#     used_SV_callers.append("manta")
+# if config["use_gridss"]:
+#     used_SV_callers.append("gridss")
 
-
-wildcard_constraints:
-     tumor_normal = "tumor|normal|sample",
+#
+# wildcard_constraints:
+#      tumor_normal = "tumor|normal|sample",
 
 
 ####################################
 # SEPARATE RULES
-include: "rules/cnvkit.smk"
-include: "rules/gatk_cnv.smk"
-include: "rules/jabCoNtool.smk"
-include: "rules/control_freec.smk"
-include: "rules/manta.smk"
-include: "rules/delly.smk"
-# include: "rules/gridss.smk"
-include: "rules/svdb.smk"
-include: "rules/variant_postprocessing.smk"
-include: "rules/common_prep.smk"
+include: "rules/edit_analysis.smk"
 # include: "rules/vep.smk"
 
 
 
 ####################################
 # RULE ALL
-def all_inputs(wildcards):
-    input_dict = {}
-    input_dict["final_report"] = "reports/final_SV_report.html",
-    if config["create_cohort_data"] == True:
-        input_dict["cohort_data_update_tag"] = "cohort_data/cohort_data_updated"
-    return input_dict
-
 rule all:
-    input: unpack(all_inputs)
+    input: "reports/editing_analysis_report.html"
