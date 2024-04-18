@@ -23,19 +23,60 @@
 #     conda:  "../wrappers/jabCoNtool/per_sample_coverage_computing/env.yaml"
 #     script: "../wrappers/jabCoNtool/per_sample_coverage_computing/script.py"
 
-rule jabCoNtool_per_sample_snp_AF:
+
+
+# rule editing_site_per_sample_snp_AF:
+#     input:  bam = "mapped/{sample_name}.bam",
+#             ref = expand("{ref_dir}/seq/{ref_name}.fa",ref_dir=reference_directory,ref_name=config["reference"])[0],
+#             snp_tsv = expand("{ref_dir}/other/known_editing_sites/{ref_name}.csv",ref_dir=reference_directory,ref_name=config["reference"])[0],
+#     output: snp_tab = "editing_analysis/known_editing_sites/{sample_name}.editing_sites_AF.tsv",
+#     log:    "logs/{sample_name}/editing_sites_get_AF.log"
+#     threads: 8
+#     resources: mem=10
+#     conda:  "../wrappers/per_sample_snp_AF_computing/env.yaml"
+#     script: "../wrappers/per_sample_snp_AF_computing/script.py"
+
+
+rule editing_site_per_sample_snp_AF:
     input:  bam = "mapped/{sample_name}.bam",
             ref = expand("{ref_dir}/seq/{ref_name}.fa",ref_dir=reference_directory,ref_name=config["reference"])[0],
-            snp_tsv = expand("{ref_dir}/other/known_editing_sites/{ref_name}.csv",ref_dir=reference_directory,lib_ROI=config["lib_ROI"])[0],
-    output: snp_tab = "editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",
+            snp_tsv = "editing_analysis/potential_edit_sites.tsv"
+    output: snp_tab = "editing_analysis/potential_edit_site_AFs/{sample_name}.editing_sites_AF.tsv",
+    log:    "logs/{sample_name}/editing_sites_get_AF.log"
+    threads: 8
+    resources: mem=10
+    conda:  "../wrappers/per_sample_snp_AF_computing/env.yaml"
+    script: "../wrappers/per_sample_snp_AF_computing/script.py"
+
+
+rule editing_site_annotation:
+    input:  tsv_for_vep = "editing_analysis/potential_edit_sites.tsv"
+    output: annotated = "editing_analysis/potential_edit_sites.annotated.tsv"
+    log:    "logs/potential_edit_site_annotation.log"
+    threads: 20
+    resources:
+        mem_mb=8000
+    params: ref = expand("{ref_dir}/seq/{ref_name}.fa",ref_dir = reference_directory,ref_name = config["reference"])[0],
+            vep_dir = expand("{ref_dir}/annot/vep",ref_dir = reference_directory)[0],
+            ref_name = config["reference"],
+            organism_name = config["organism"]
+    conda:  "../wrappers/variant_annotation/env.yaml"
+    script: "../wrappers/variant_annotation/script.py"
+
+
+rule editing_res_processing:
+    input:  all_vars_tsv = expand("editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist())
+            annotated = "editing_analysis/potential_edit_sites.annotated.tsv"
+    output: res_tab = "editing_analysis/res_tab.tsv"
     log:    "logs/{sample_name}/known_editing_sites_get_AF.log"
     threads: 8
     resources: mem=10
-    conda:  "../wrappers/jabCoNtool/per_sample_snp_AF_computing/env.yaml"
-    script: "../wrappers/jabCoNtool/per_sample_snp_AF_computing/script.py"
+    conda:  "../wrappers/editing_res_processing/env.yaml"
+    script: "../wrappers/editing_res_processing/script.py"
 
-rule final_alignment_report:
-    input:  all_vars_tsv= expand("editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist())
+
+rule final_editing_report:
+    input:  res_tab = "editing_analysis/res_tab.tsv"
     output: html = "reports/editing_analysis_report.html"
     # params: sample_name = sample_tab.sample_name,
     #         config = "./config.json"
