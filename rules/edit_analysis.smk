@@ -39,14 +39,14 @@
 
 rule editing_site_per_sample_snp_AF:
     input:  bam = "mapped/{sample_name}.bam",
-            ref = expand("{ref_dir}/seq/{ref_name}.fa",ref_dir=reference_directory,ref_name=config["reference"])[0],
+            ref = config["organism_fasta"],
             snp_tsv = "editing_analysis/potential_edit_sites.tsv"
     output: snp_tab = "editing_analysis/potential_edit_site_AFs/{sample_name}.editing_sites_AF.tsv",
     log:    "logs/{sample_name}/editing_sites_get_AF.log"
     threads: 8
     resources: mem=10
-    conda:  "../wrappers/per_sample_snp_AF_computing/env.yaml"
-    script: "../wrappers/per_sample_snp_AF_computing/script.py"
+    conda:  "../wrappers/editing_site_per_sample_snp_AF/env.yaml"
+    script: "../wrappers/editing_site_per_sample_snp_AF/script.py"
 
 
 rule editing_site_annotation:
@@ -56,19 +56,18 @@ rule editing_site_annotation:
     threads: 20
     resources:
         mem_mb=8000
-    params: ref = expand("{ref_dir}/seq/{ref_name}.fa",ref_dir = reference_directory,ref_name = config["reference"])[0],
-            vep_dir = expand("{ref_dir}/annot/vep",ref_dir = reference_directory)[0],
-            ref_name = config["reference"],
+    params: ref = config["organism_fasta"],
+            vep_dir = config["organism_vep_dir"],
             organism_name = config["organism"]
-    conda:  "../wrappers/variant_annotation/env.yaml"
-    script: "../wrappers/variant_annotation/script.py"
+    conda:  "../wrappers/editing_site_annotation/env.yaml"
+    script: "../wrappers/editing_site_annotation/script.py"
 
 
 rule editing_res_processing:
-    input:  all_vars_tsv = expand("editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist())
+    input:  all_vars_tsv = expand("editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist()),
             annotated = "editing_analysis/potential_edit_sites.annotated.tsv"
     output: res_tab = "editing_analysis/res_tab.tsv"
-    log:    "logs/{sample_name}/known_editing_sites_get_AF.log"
+    log:    "logs/editing_res_processing.log"
     threads: 8
     resources: mem=10
     conda:  "../wrappers/editing_res_processing/env.yaml"
