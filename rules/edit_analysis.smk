@@ -58,14 +58,15 @@ rule editing_site_annotation:
         mem_mb=8000
     params: ref = config["organism_fasta"],
             vep_dir = config["organism_vep_dir"],
-            organism_name = config["organism"]
+            organism_name = config["organism"],
+            assembly = config["assembly"],
     conda:  "../wrappers/editing_site_annotation/env.yaml"
     script: "../wrappers/editing_site_annotation/script.py"
 
 
 rule editing_res_processing:
-    input:  all_vars_tsv = expand("editing_analysis/known_editing_sites/{sample_name}.known_editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist()),
-            annotated = "editing_analysis/potential_edit_sites.annotated.tsv"
+    input:  all_vars_tsv = expand("editing_analysis/potential_edit_site_AFs/{sample_name}.editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist()),
+            annotated = "editing_analysis/full_annot_editing_tab.tsv"
     output: res_tab = "editing_analysis/res_tab.tsv"
     log:    "logs/editing_res_processing.log"
     threads: 8
@@ -75,7 +76,7 @@ rule editing_res_processing:
 
 
 rule final_editing_report:
-    input:  res_tab = "editing_analysis/res_tab.tsv"
+    input:  res_tab = "editing_analysis/full_annot_editing_tab.tsv"
     output: html = "reports/editing_analysis_report.html"
     # params: sample_name = sample_tab.sample_name,
     #         config = "./config.json"

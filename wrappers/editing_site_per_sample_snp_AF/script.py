@@ -21,7 +21,7 @@ def save_sorted_table(file_path, output_file_path):
     # Write the sorted data to a new file
     with open(output_file_path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter='\t')
-        writer.writerow(["Chromosome", "Position"])  # Optional: write a header
+        # writer.writerow(["Chromosome", "Position"])  # Optional: write a header
         for chrom, pos in data:
             writer.writerow([chrom, pos])
 

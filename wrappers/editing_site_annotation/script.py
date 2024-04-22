@@ -19,7 +19,7 @@ f = open(log_filename, 'at')
 f.write("## VERSION: ensembl-vep  :  "+version+"\n")
 f.close()
 
-assembly = re.sub("\-.*","",snakemake.params.ref_name)
+assembly = snakemake.params.assembly
 
 if snakemake.threads > 1:
     fork_text = "--fork " + str(snakemake.threads)

@@ -15,6 +15,9 @@
       "editing_analysis/*",
       "reports/editing_analysis_report.html"
     ],
+    "inputs_optional":[
+      "editing_analysis/potential_edit_sites.tsv"
+    ],
     "report_index": "reports/editing_analysis_report.html",
     "reports":[
       "reports/editing_analysis_report.html"
