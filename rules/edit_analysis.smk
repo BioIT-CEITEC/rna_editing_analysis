@@ -66,8 +66,8 @@ rule editing_site_annotation:
 
 rule editing_res_processing:
     input:  all_vars_tsv = expand("editing_analysis/potential_edit_site_AFs/{sample_name}.editing_sites_AF.tsv",sample_name=sample_tab.sample_name.tolist()),
-            annotated = "editing_analysis/full_annot_editing_tab.tsv"
-    output: res_tab = "editing_analysis/res_tab.tsv"
+            annotated = "editing_analysis/potential_edit_sites.annotated.tsv"
+    output: res_tab = "editing_analysis/full_annot_editing_tab.tsv"
     log:    "logs/editing_res_processing.log"
     threads: 8
     resources: mem=10
