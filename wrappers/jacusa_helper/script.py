@@ -16,7 +16,7 @@ f.write("\n##\n## CONDA: " + version + "\n")
 f.close()
 
 command = "Rscript "+os.path.abspath(os.path.dirname(__file__))+"/jacusa_helper.R "+\
-            dirname(snakemake.input.raw) + " >> " + log_filename + " 2>&1 "
+            dirname(snakemake.input.raw) + " " + dirname(snakemake.output.processed) + " >> " + log_filename + " 2>&1 "
 
 f = open(log_filename, 'a+')
 f.write("## COMMAND: "+command+"\n")
