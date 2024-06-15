@@ -20,7 +20,11 @@ use rule * from BR as other_*
 ##### Config processing #####
 
 sample_tab = BR.load_sample()
+
 config = BR.load_organism()
+
+tools = BR.load_tooldir()
+
 
 #### FOLDERS
 wildcard_constraints:
@@ -33,4 +37,4 @@ include: "rules/edit_analysis.smk"
 ####################################
 # RULE ALL
 rule all:
-    input: expand("{sample_name}.a-to-i.bam", sample_name=sample_tab.sample_name)
+    input: expand("jacusa_call/{sample}_potential_edit_sites.tsv", sample=sample_tab.sample_name)

@@ -2,7 +2,7 @@ rule bam_preprocessing:
     input:  bam = "mapped/{sample}.bam",
             ref = config["organism_fasta"]
     output: bam = "mapped/{sample}.MD.bam",
-    log:    "logs/{sample}/gsnap_mapping.log"
+    log:    "logs/{sample}/bam_preprocessing.log"
     threads: 10
     resources: mem=10
     conda:  "../wrappers/bam_preprocessing/env.yaml"
@@ -25,6 +25,7 @@ rule jacusa_call:
 rule jacusa_helper:
     input:  raw = "jacusa_call/{sample}.txt"
     output: processed = "jacusa_call/{sample}_potential_edit_sites.tsv"
+    logL "logs/{sample}/jacusa_helper.log"
     threads: 10
     conda:  "../wrappers/jacusa_helper/env.yaml"
     script: "../wrappers/jacusa_helper/script.py"

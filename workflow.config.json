@@ -22,7 +22,46 @@
   "requested_params": [
     "reference"
   ],
-  "gui_params" : {
+  "gui_params": {
+    "primary": {
+      "reference": {
+        "label": "Genomic Reference",
+        "type": "enum",
+        "info": "Reference organism assembly and release to be used for the analysis",
+        "default": ##INCLUDE:reference-info.v24.1/default_reference.json##,
+        "list":  ##INCLUDE:reference-info.v24.1/reference2.json##
+      },
+      "strand": {
+        "label": "Strandedness",
+        "type": "enum",
+        "info": "Strand captured in the sequencing library",
+        "default": "RF-FIRSTRAND",
+        "list": {
+          "FR-SECONDSTRAND": "Forward",
+          "RF-FIRSTRAND": "Reverse",
+          "UNSTRANDED": "Unstranded"
+        }
+      }
+    },
+    "detailed": {
+      "min_mapq": {
+        "label": "Minimum mapping quality",
+        "type": "string",
+        "info": "Minimum mapping quality for a read to be considered (High values may skip repetitive alignments)",
+        "default": "1"
+      },
+      "filternh": {
+        "label": "Filter by number of hits",
+        "type": "string",
+        "info": "Checks LH field in the BAM/SAM files with the selected number of hits",
+        "default": "999"
+      },
+      "filternm": {
+        "label": "Filter by number of mismatches",
+        "type": "string",
+        "info": "Checks LH field in the BAM/SAM files with the selected number of hits",
+        "default": "999"
+      }
+    }
   }
 }
-
