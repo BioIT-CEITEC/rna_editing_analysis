@@ -1,8 +1,8 @@
 {
   "workflow_description": {
-    "name":"a_to_i_editing_analysis",
+    "name":"JACUSA2_editing_analysis",
     "version": 1.0,
-    "label":"A-to-I editing analysis",
+    "label":"JACUSA2 A-to-I editing analysis",
     "type":"rna_editing",
         "run_parameters": {
       "cpu": 4,
@@ -12,15 +12,7 @@
       "mapped/{sample}.bam*"
     ],
     "outputs":[
-      "editing_analysis/*",
-      "reports/editing_analysis_report.html"
-    ],
-    "inputs_optional":[
-      "editing_analysis/potential_edit_sites.tsv"
-    ],
-    "report_index": "reports/editing_analysis_report.html",
-    "reports":[
-      "reports/editing_analysis_report.html"
+      "jacusa_call/*"
     ]
   },
   "general_params": [
