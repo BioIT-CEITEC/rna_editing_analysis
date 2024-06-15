@@ -18,7 +18,7 @@ f = open(log_filename, "at")
 f.write("\n##\n## CONDA: " + version + "\n")
 f.close()
 
-command = "samtools -@ " + snakemale.threads + " -b -E " + snakemake.input.bam + " " + smakemake.input.ref + " > " + snakemake.output.bam + " 2> /dev/null"
+command = "samtools calmd -@ " + str(snakemake.threads) + " -b -E " + snakemake.input.bam + " " + snakemake.input.ref + " > " + snakemake.output.bam + " 2> /dev/null"
 f= open(log_filename, "at")
 f.write("\n##\n## COMMAND: " + command + "\n")
 f.close()

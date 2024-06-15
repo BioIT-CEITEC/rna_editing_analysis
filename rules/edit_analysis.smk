@@ -3,7 +3,7 @@ rule bam_preprocessing:
             ref = config["organism_fasta"]
     output: bam = "mapped/{sample}.MD.bam",
     log:    "logs/{sample}/bam_preprocessing.log"
-    threads: 10
+    threads: 30
     resources: mem=10
     conda:  "../wrappers/bam_preprocessing/env.yaml"
     script: "../wrappers/bam_preprocessing/script.py"
@@ -12,9 +12,9 @@ rule jacusa_call:
     input:  bam = "mapped/{sample}.MD.bam",
             ref = config["organism_fasta"]
     output: jacusa = "jacusa_call/{sample}.txt",
-            log = "logs/{sample}/jacusa_calling.log"
-    threads: 10
-    params: jacusa = config["tool_dir"] + "/JACUSA2/JACUSA2_v2.0.4.jar",
+    log:    "logs/{sample}/jacusa_calling.log"
+    threads: 30
+    params: jacusa = config["tooldir"] + "/JACUSA2/JACUSA_v2.0.4.jar",
             strand = config["strand"],
             min_mapq = config["min_mapq"],
             filternh = config["filternh"],
@@ -25,7 +25,7 @@ rule jacusa_call:
 rule jacusa_helper:
     input:  raw = "jacusa_call/{sample}.txt"
     output: processed = "jacusa_call/{sample}_potential_edit_sites.tsv"
-    logL "logs/{sample}/jacusa_helper.log"
-    threads: 10
+    log:    "logs/{sample}/jacusa_helper.log"
+    threads: 30
     conda:  "../wrappers/jacusa_helper/env.yaml"
     script: "../wrappers/jacusa_helper/script.py"

@@ -36,3 +36,8 @@ potential_edit_sites <- function(args){
 
     }
 }
+
+
+#run as Rscript
+args <- commandArgs(trailingOnly = TRUE)
+potential_edit_sites(args)
