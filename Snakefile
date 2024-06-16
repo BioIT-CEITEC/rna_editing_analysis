@@ -38,4 +38,5 @@ include: "rules/edit_analysis.smk"
 ####################################
 # RULE ALL
 rule all:
-    input: expand("jacusa_call/{sample}_potential_edit_sites.tsv", sample=sample_tab.sample_name)
+    input: expand("jacusa_call/{sample}.txt", sample = sample_tab.sample_name),
+            "jacusa_call/potential_edit_sites.tsv"

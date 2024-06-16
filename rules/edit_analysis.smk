@@ -24,7 +24,7 @@ rule jacusa_call:
 
 rule jacusa_helper:
     input:  raw = "jacusa_call/{sample}.txt"
-    output: processed = "jacusa_call/{sample}_potential_edit_sites.tsv"
+    output: processed = "jacusa_call/potential_edit_sites.tsv"
     log:    "logs/{sample}/jacusa_helper.log"
     threads: 30
     conda:  "../wrappers/jacusa_helper/env.yaml"

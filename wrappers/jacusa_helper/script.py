@@ -18,7 +18,13 @@ f.close()
 command = "Rscript "+os.path.abspath(os.path.dirname(__file__))+"/jacusa_helper.R "+\
             dirname(snakemake.input.raw) + " " + dirname(snakemake.output.processed) + " >> " + log_filename + " 2>&1 "
 
-f = open(log_filename, 'a+')
+f = open(log_filename, 'at')
+f.write("## COMMAND: "+command+"\n")
+f.close()
+shell(command)
+
+command = "touch "+ snakemake.output.processed
+f = open(log_filename, 'at')
 f.write("## COMMAND: "+command+"\n")
 f.close()
 shell(command)
